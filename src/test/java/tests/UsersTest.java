@@ -2,6 +2,7 @@ package tests;
 import config.BaseTest;
 import config.Endpoints;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import models.user_models.CreateUserModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -47,5 +48,19 @@ public class UsersTest extends BaseTest {
         Assert.assertEquals(response.getName(), "morpheus", "Не корректное имя пользователя");
         Assert.assertEquals(response.getJob(), "leader", "Не корректная работа");
         Assert.assertNotNull(response.getCreatedAt(), "В ответе отсутствует Дата создания");
+    }
+
+    @Test
+    public void testDeleteUserByID() {
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .delete(Endpoints.USERS_URL + "/2")
+                .then()
+                .statusCode(204)
+                .extract().response();
+
+        Assert.assertEquals(response.statusCode(), 204, "Не корректный статус код при удалении пользователя");
     }
 }

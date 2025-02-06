@@ -2,6 +2,7 @@ package tests;
 import config.BaseTest;
 import config.Endpoints;
 import io.restassured.http.ContentType;
+import models.user_models.CreateUserModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import models.user_models.UserModel;
@@ -27,5 +28,24 @@ public class UsersTest extends BaseTest {
         Assert.assertNotNull(response.getData().getEmail(), "В ответе отсутствует Электронная почта");
         Assert.assertNotNull(response.getSupport().getText(), "В ответе отсутствует Текст");
         Assert.assertNotNull(response.getSupport().getUrl(), "В ответе отсутствует URL");
+    }
+
+    @Test
+    public void testCreateUser() {
+        String requestBody = "{\"name\": \"morpheus\", \"job\": \"leader\"}";
+
+        CreateUserModel response = given()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when()
+                .post(Endpoints.USERS_URL)
+                .then()
+                .statusCode(201)
+                .extract().as(CreateUserModel.class);
+
+        Assert.assertNotNull(response.getId(), "В ответе нет id");
+        Assert.assertEquals(response.getName(), "morpheus", "Не корректное имя пользователя");
+        Assert.assertEquals(response.getJob(), "leader", "Не корректная работа");
+        Assert.assertNotNull(response.getCreatedAt(), "В ответе отсутствует Дата создания");
     }
 }

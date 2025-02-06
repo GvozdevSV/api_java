@@ -31,4 +31,22 @@ public class AuthTests extends BaseTest {
         String token = response.jsonPath().getString("token");
         Assert.assertNotNull(token, "В ответе токен имеет значение null");
     }
+
+    @Test
+    public void testUnsuccessfulLogin() {
+        String requestBody = "{ \"email\": \"eve.holt@reqres.in\"}";
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when()
+                .post(Endpoints.LOGIN_URL)
+                .then()
+                .statusCode(400)
+                .body("error", notNullValue())
+                .extract().response();
+
+        String error = response.jsonPath().getString("error");
+        Assert.assertEquals(error, "Missing password" ,"Не появилось сообщение об отсутствии пароля");
+    }
 }
